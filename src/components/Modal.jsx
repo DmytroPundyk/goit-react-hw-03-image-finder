@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import React, { Component } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
+
 import styled from 'styled-components';
 
 const Overlay = styled.div`
@@ -24,46 +25,43 @@ const Modall = styled.div`
 
 const modalRoot = document.querySelector('#modal-root');
 
-const Modal = ({ children, onClose }) => {
-  // Вешает слушатели (mount)
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
+export default class Modal extends Component {
+  static propTypes = {
+    image: PropTypes.objectOf(PropTypes.string),
+    toggleModal: PropTypes.func,
+  };
 
-    // Убирает слушатети (unmount)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  });
+  componentDidMount() {
+    window.addEventListener('keydown', this.onCloseKeyEvent);
+  }
 
-  // Наблюдает на Escape и закрывает модалку
-  const handleKeyDown = event => {
-    if (event.code === 'Escape') {
-      onClose();
+  onCloseKeyEvent = e => {
+    const { toggleModal } = this.props;
+    if (e.code === 'Escape') {
+      toggleModal();
     }
   };
 
-  // Наблюдает за бекдропом и закрывает модалку
-  const handleBackdropClick = event => {
-    if (event.currentTarget === event.target) {
-      onClose();
+  onCloseOverlay = e => {
+    const { toggleModal } = this.props;
+    if (e.target === e.currentTarget) {
+      toggleModal();
     }
   };
 
-  return createPortal(
-    <Overlay onClick={handleBackdropClick}>
-      <Modall>{children}</Modall>
-    </Overlay>,
-    modalRoot,
-  );
-};
+  render() {
+    const { src, name } = this.props.image;
+    return createPortal(
+      <Overlay onClick={this.onCloseOverlay}>
+        <Modall>
+          <img src={src} alt={name} />
+        </Modall>
+      </Overlay>,
+      modalRoot,
+    );
+  }
 
-Modal.defaultProps = {
-  children: null,
-};
-
-Modal.propTypes = {
-  children: PropTypes.node,
-  onClose: PropTypes.func.isRequired,
-};
-
-export default Modal;
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.onCloseKeyEvent);
+  }
+}

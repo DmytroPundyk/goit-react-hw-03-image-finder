@@ -1,27 +1,26 @@
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import styles from './ImageGalleryItem.module.scss';
+import styled from 'styled-components';
 
-const ImageGalleryItem = ({ image, onImageClick }) => {
-  const fullImage = () => onImageClick(image.largeImageURL);
+const GalleryItemImg = styled.img`
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  &:hover {
+    transform: scale(1.03);
+    cursor: zoom-in;
+  }
+`;
 
-  return (
-    <li>
-      <img src={image.webformatURL} alt={image.tags} onClick={fullImage} />
-    </li>
-  );
-};
+export default class ImageGalleryItem extends Component {
+  static propTypes = {
+    image: PropTypes.string,
+    name: PropTypes.string,
+  };
 
-ImageGalleryItem.defaultProps = {
-  tags: '',
-};
-
-ImageGalleryItem.propTypes = {
-  image: PropTypes.shape({
-    webformatURL: PropTypes.string.isRequired,
-    largeImageURL: PropTypes.string.isRequired,
-    tags: PropTypes.string,
-  }),
-  onImageClick: PropTypes.func.isRequired,
-};
-
-export default ImageGalleryItem;
+  render() {
+    const { image, name } = this.props;
+    return <GalleryItemImg src={image} alt={name} />;
+  }
+}
