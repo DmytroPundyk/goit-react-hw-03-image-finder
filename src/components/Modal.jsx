@@ -35,6 +35,10 @@ export default class Modal extends Component {
     window.addEventListener('keydown', this.onCloseKeyEvent);
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.onCloseKeyEvent);
+  }
+
   onCloseKeyEvent = e => {
     const { toggleModal } = this.props;
     if (e.code === 'Escape') {
@@ -59,9 +63,5 @@ export default class Modal extends Component {
       </Overlay>,
       modalRoot,
     );
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onCloseKeyEvent);
   }
 }
